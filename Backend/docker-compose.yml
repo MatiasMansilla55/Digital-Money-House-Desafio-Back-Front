@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0.33
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Iancurti$87
+      MYSQL_DATABASE: userregistry
+    ports:
+      - 3307:3306
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  eureka-server:
+    build: eureka-server/
+    image: matias7132/eureka-server:latest
+    ports:
+      - 8761:8761
+
+  config-server:
+    build: config-server/
+    image: matias7132/config-server:latest
+    ports:
+      - 8889:8889
+    depends_on:
+      - eureka-server
+
+  gateway:
+    build: gateway/
+    image: matias7132/gateway:latest
+    ports:
+      - 8085:8085
+    depends_on:
+      - eureka-server
+      - config-server
+
+  user-service:
+    build: user-service/
+    image: matias7132/user-service:latest
+    ports:
+      - 8087:8087
+    depends_on:
+      - eureka-server
+
+  accounts-service:
+    build: accounts-service/
+    image: matias7132/accounts-service:latest
+    ports:
+      - 8084:8084
+    depends_on:
+      - eureka-server
+
+volumes:
+  mysql-data:
