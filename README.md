@@ -49,3 +49,17 @@ El lenguaje de programación es **Java con Spring Boot**, una arquitectura de mi
 3. Ejecutar los siguientes comandos:
    -npm install
    .npm start
+Pasos para ejecutar el backend
+1. Clonar el repositorio del backend:
+   -git clone https://github.com/MatiasMansilla55/Digital-Money-House-Desaf-o-Back-Front/tree/main
+2. Abrir el proyecto con IntelliJ.
+3. Correr cada microservicio en el siguiente orden:
+   eureka-server, config-server, gateway, user-service, accounts-service.
+4. Cada microservicio tiene su configuración en el repositorio de GitHub gestionado por el microservicio config-server.
+5. La base de datos se levanta automáticamente.
+Repositorio de configuraciones (config-server)
+Todas las configuraciones de los microservicios se encuentran aquí:
+https://github.com/MatiasMansilla55/config-server en GitHub
+Aclaración
+Todos mis commits están en el repositorio de GitLab, ya que en las diapositivas del desafío se indicaba usar GitLab.
+Sin embargo, también creé otro repositorio en GitHub con este backend y el frontend. 
