@@ -53,7 +53,7 @@ Correr cada microservicio en el siguiente orden: eureka-server, config-server, g
 Cada microservicio tiene su configuracion en en github y todo se esto se encarga el microservicio config-server, la base de datos se levanta sola. 
 
 Repostiorio del microservicio Config-server, donde estan todas las configuraciones de los microservicios:
-git@github.com:MatiasMansilla55/config-server.git
+https://github.com/MatiasMansilla55/config-server
 
 Aclaracion: Todos mi commits estan en el repositorio de gitlab ya que en  las diapositivas decia que habia que usar gitlab. Igualmente cree otro repositorio en github con este backend y el front-end. 
 
