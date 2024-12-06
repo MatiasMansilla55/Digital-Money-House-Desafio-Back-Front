@@ -42,42 +42,39 @@ El lenguaje de programación es **Java con Spring Boot**, una arquitectura de mi
 
 ## Pasos para ejecutar el frontend
 
-## Pasos para ejecutar el frontend
-
 1. **Clonar el repositorio del frontend**:  
    ```bash
    git clone https://github.com/MatiasMansilla55/Digital-Money-House-Desaf-o-Back-Front/tree/main
-Entrar al Front-End con Visual Studio Code.
+2. Entrar al Front-End con Visual Studio Code.
 
-Ejecutar los siguientes comandos:
-
-bash
-Copiar código
-npm install
-npm start
-Pasos para ejecutar el backend
-Clonar el repositorio del backend:
+3. Ejecutar los siguientes comandos:
 
 bash
 Copiar código
-git clone https://github.com/MatiasMansilla55/Digital-Money-House-Desaf-o-Back-Front/tree/main
-Abrir el proyecto con IntelliJ.
+   npm install
+   npm start
+## Pasos para ejecutar el backend
 
-Correr cada microservicio en el siguiente orden:
+1. Clonar el repositorio del backend:
+   ```bash
+   git clone https://github.com/MatiasMansilla55/Digital-Money-House-Desaf-o-Back-Front/tree/main
+2. Abrir el proyecto con IntelliJ.
 
-eureka-server
-config-server
-gateway
-user-service
-accounts-service
-Cada microservicio tiene su configuración en el repositorio de GitHub gestionado por el microservicio config-server.
+3. Correr cada microservicio en el siguiente orden:
 
-La base de datos se levanta automáticamente.
+- eureka-server
+- config-server
+- gateway
+- user-service
+- accounts-service
+4. Cada microservicio tiene su configuración en el repositorio de GitHub gestionado por el microservicio config-server.
 
-Repositorio de configuraciones (config-server)
+5. La base de datos se levanta automáticamente.
+
+## Repositorio de configuraciones (config-server)
 Todas las configuraciones de los microservicios se encuentran aquí:
 Config-server en GitHub
 
-Aclaración
+## Aclaración
 Todos mis commits están en el repositorio de GitLab, ya que en las diapositivas del desafío se indicaba usar GitLab.
 Sin embargo, también creé otro repositorio en GitHub con este backend y el frontend.
