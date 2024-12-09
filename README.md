@@ -74,6 +74,8 @@ Copiar código
 ## Repositorio de configuraciones (config-server)
 Todas las configuraciones de los microservicios se encuentran aquí:
 Config-server en GitHub
+## Link hacia POSTMAN
+https://web.postman.co/workspace/My-Workspace~0b688a8a-3650-4874-80f7-53698b23dc8f/request/19386776-32ef3e6d-f670-4020-9d2f-fa10289dcda0
 
 ## Aclaración
 Todos mis commits están en el repositorio de GitLab, ya que en las diapositivas del desafío se indicaba usar GitLab.
