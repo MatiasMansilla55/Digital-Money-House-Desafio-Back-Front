@@ -21,6 +21,11 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)// Desactivar CSRF
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers(
+                                "/v3/api-docs/**",  // Documentación de OpenAPI
+                                "/swagger-ui/**",   // Recursos de Swagger UI
+                                "/swagger-ui.html"  // Página principal de Swagger
+                        ).permitAll()
                         .requestMatchers("/accounts/create/**").permitAll()
                         .requestMatchers("/accounts/update/alias/**").permitAll() // Permitir acceso sin autenticación a ciertos endpoints
                         .anyRequest().authenticated() // Requiere autenticación para el resto
