@@ -14,6 +14,10 @@
         <option value="$PROJECT_DIR$/eureka-server/pom.xml" />
         <option value="$PROJECT_DIR$/config-server/pom.xml" />
         <option value="$PROJECT_DIR$/accounts-service/pom.xml" />
+        <option value="$PROJECT_DIR$/api-cards/pom.xml" />
+        <option value="$PROJECT_DIR$/api-transfers/pom.xml" />
+        <option value="$PROJECT_DIR$/common-models/pom.xml" />
+        <option value="$PROJECT_DIR$/api-activity/pom.xml" />
       </list>
     </option>
   </component>

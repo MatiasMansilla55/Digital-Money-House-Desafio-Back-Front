@@ -4,8 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "Cards")
+
 @AllArgsConstructor
 @NoArgsConstructor
 public class Card {

@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -32,9 +36,6 @@ public class SecurityConfig {
 
 
 
-
-
-    @Autowired
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -43,11 +44,12 @@ public class SecurityConfig {
                     // Ejemplo: permite el acceso a la creación de usuario sin autenticación
                     // http.requestMatchers("/create-user").permitAll();
                     //http.requestMatchers("/users/{userId}/logout").authenticated();
-                   http.anyRequest().permitAll();
+                    http.anyRequest().permitAll();
                 })
 
 
                 .build();
+
     }
 
     @Bean
@@ -55,11 +57,11 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
         configuration.setAllowedMethods(List.of(HttpMethod.GET.name(), HttpMethod.POST.name(), HttpMethod.PUT.name(), HttpMethod.DELETE.name(), HttpMethod.OPTIONS.name(), HttpMethod.PATCH.name()));
-        configuration.setAllowedHeaders(List.of("*")); // Permitir todos los encabezados
-        configuration.setAllowCredentials(true); // Permitir credenciales
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Aplicar a todas las rutas
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
@@ -67,6 +69,5 @@ public class SecurityConfig {
     public CorsWebFilter corsWebFilter() {
         return new CorsWebFilter(corsConfigurationSource());
     }
-
 
 }

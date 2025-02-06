@@ -13,11 +13,29 @@
         <module name="eureka-server" />
         <module name="gateway" />
       </profile>
+      <profile name="Annotation profile for api-" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
+        </processorPath>
+        <module name="api-cards" />
+        <module name="api-activity" />
+        <module name="api-transfers" />
+      </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="common-models" target="21" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="accounts-service" options="-parameters" />
+      <module name="api-activity" options="-parameters" />
+      <module name="api-cards" options="-parameters" />
+      <module name="api-transfers" options="-parameters" />
+      <module name="common-models" options="-parameters" />
       <module name="config-server" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="gateway" options="-parameters" />

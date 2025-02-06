@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AccountEntryDTO {
     private Long userId;// ID del usuario al que pertenece la cuenta
+    private String email;
     private String alias;
     private String cvu;
     private BigDecimal balance; // Saldo de la cuenta

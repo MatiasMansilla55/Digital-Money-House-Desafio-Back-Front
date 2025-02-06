@@ -25,6 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private AccountsServiceImpl accountsServiceImpl;
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
@@ -48,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             // Validar si el email del token coincide con el email de la cuenta
-            Account account = accountsServiceImpl.findByEmail(email);
+            Account account = accountsServiceImpl.findByEmail(email, "Bearer "+ token);
             if (account != null && email.equals(account.getEmail())) {
                 logger.info("Autenticación exitosa para el usuario con email: " + email);
 

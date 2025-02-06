@@ -51,5 +51,23 @@ public class SecurityConfiguration {
     public CorsWebFilter corsWebFilter() {
         return new CorsWebFilter(corsConfigurationSource());
     }
+    @Bean
+    public RouteLocator gatewayRoutes(RouteLocatorBuilder builder, JwtGatewayFilter jwtGatewayFilter) {
+        return builder.routes()
+                .route("api_activity", r -> r.path("/accounts/{accountId}/activity/**")
+                        .filters(f -> f.filter(jwtGatewayFilter))
+                        .uri("http://localhost:9091")) // Ruta al microservicio api-activity
+                .route("api_cards", r -> r.path("/accounts/{accountId}/cards/**")
+                        .filters(f -> f.filter(jwtGatewayFilter))
+                        .uri("http://localhost:8083")) // Ruta al microservicio api-cards
+                .route("api_transfers", r -> r.path("/accounts/{accountId}/transferences/**")
+                        .filters(f -> f.filter(jwtGatewayFilter))
+                        .uri("http://localhost:9092")) // Ruta al microservicio api-transfers
+                .build();
+    }
+
 
 }
+
+
+

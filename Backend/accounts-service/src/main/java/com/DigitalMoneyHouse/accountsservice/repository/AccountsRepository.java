@@ -8,11 +8,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Repository
 public interface AccountsRepository extends JpaRepository<Account, Long> {
    Account findByEmail(String email);
-    Account findByAlias(String recipientIdentifier);
-    Account findByCvu(String recipientIdentifier);
+
+   Optional<Account> findFirstByAlias(String alias);
+    Optional<Account> findByCvu(String recipientIdentifier);
     @Modifying
     @Transactional
     @Query("UPDATE Account a SET a.alias = :alias WHERE a.id = :id")

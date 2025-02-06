@@ -17,6 +17,7 @@ import com.example.demo.repository.VerificationTokenRepository;
 import com.example.demo.service.IUserService;
 import com.example.demo.service.client.AccountClient;
 import com.example.demo.utils.JsonPrinter;
+import feign.FeignException;
 import jakarta.ws.rs.BadRequestException;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -106,7 +107,10 @@ public class UserServiceImpl implements IUserService {
         user.setEmailVerified(false);
         user.setPassword(passwordEncoder.encode(userEntryDto.getPassword()));
         log.info("Encoded password for user {}: {}", userEntryDto.getEmail(), user.getPassword());
+        log.debug("Datos del usuario antes de persistir: Alias: {}, CVU: {}, Email: {}",
+                alias, cvu, userEntryDto.getEmail());
         User registeredUser = userRepository.save(user);
+        log.info("Usuario guardado exitosamente con ID: {}", registeredUser.getId());
 
         AccountCreationRequest accountRequest = new AccountCreationRequest();
         accountRequest.setUserId(registeredUser.getId());
@@ -114,11 +118,24 @@ public class UserServiceImpl implements IUserService {
         accountRequest.setAlias(registeredUser.getAlias());
         accountRequest.setCvu(registeredUser.getCvu());
         accountRequest.setInitialBalance(BigDecimal.ZERO);
+        log.info("Solicitud de creación de cuenta: {}", accountRequest);
+        try {
+            // Llamada al servicio de creación de cuenta
+            AccountResponse accountResponse = accountClient.createAccount(accountRequest);
+            log.info("Cuenta creada exitosamente con ID: {}", accountResponse.getId());
 
-        AccountResponse accountResponse = accountClient.createAccount(accountRequest);
+            // Asociar cuenta al usuario registrado
+            registeredUser.setAccountId(accountResponse.getId());
+            userRepository.save(registeredUser);
+            log.info("Cuenta asociada al usuario con ID: {}", registeredUser.getId());
+        } catch (FeignException.BadRequest e) {
+            log.error("Error 400 en la creación de cuenta: {}", e.getMessage());
+            throw new AccountCreationException("Datos inválidos para la creación de cuenta");
+        } catch (FeignException e) {
+            log.error("Error al comunicarse con accounts-service: {}", e.getMessage());
+            throw new AccountCreationException("Error al crear la cuenta");
+        }
 
-        registeredUser.setAccountId(accountResponse.getId());
-        userRepository.save(registeredUser);
 
         return registeredUser;
     }

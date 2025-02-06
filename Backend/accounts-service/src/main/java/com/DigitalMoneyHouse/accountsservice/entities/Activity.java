@@ -6,8 +6,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "activities")
+
 @Data
 public class Activity {
 

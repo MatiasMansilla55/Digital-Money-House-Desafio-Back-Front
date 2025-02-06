@@ -28,6 +28,8 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/accounts/create/**").permitAll()
                         .requestMatchers("/accounts/update/alias/**").permitAll() // Permitir acceso sin autenticación a ciertos endpoints
+
+
                         .anyRequest().authenticated() // Requiere autenticación para el resto
                 )
                 //.addFilterBefore(jwtAuthenticationFilter(), BasicAuthenticationFilter.class); // Agregar el filtro de autenticación JWT

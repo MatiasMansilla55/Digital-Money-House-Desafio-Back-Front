@@ -12,28 +12,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Data
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "Accounts")
-public class Account implements UserDetails {
+public class Account  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
-
+    @Column
     private Long userId;
-
+    @Column
     private String email;
-
+    @Column
     private String alias;
-
+    @Column
     private String cvu;
-
+    @Column
     private BigDecimal balance;
 
-    private String password; // Campo para almacenar la contraseña del usuario
+    //private String password; // Campo para almacenar la contraseña del usuario
 
     @Transient
     private List<Transaction> transactions;
@@ -43,39 +43,60 @@ public class Account implements UserDetails {
         this.balance = balance;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return new ArrayList<>(); // Retorna los roles o permisos si los tienes
+    public Long getId() {
+        return Id;
     }
 
-    @Override
-    public String getPassword() {
-        return this.password; // Devuelve la contraseña del usuario
+    public void setId(Long id) {
+        Id = id;
     }
 
-    @Override
-    public String getUsername() {
-        return this.email; // Usa el email como el nombre de usuario
+    public Long getUserId() {
+        return userId;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
+    public String getEmail() {
+        return email;
     }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public String getCvu() {
+        return cvu;
+    }
+
+    public void setCvu(String cvu) {
+        this.cvu = cvu;
+    }
+
+    public BigDecimal getBalance() {
+        return balance;
+    }
+
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 }
 

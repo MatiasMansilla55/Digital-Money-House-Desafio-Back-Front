@@ -4,6 +4,7 @@ package com.DigitalMoneyHouse.accountsservice.service.impl;
 import com.DigitalMoneyHouse.accountsservice.dto.entry.AccountEntryDTO;
 import com.DigitalMoneyHouse.accountsservice.dto.exit.AccountOutDTO;
 
+import com.DigitalMoneyHouse.accountsservice.exceptions.AccountPersistenceException;
 import com.DigitalMoneyHouse.accountsservice.exceptions.ResourceNotFoundException;
 import com.DigitalMoneyHouse.accountsservice.repository.AccountsRepository;
 import com.DigitalMoneyHouse.accountsservice.repository.TransactionRepository;
@@ -12,16 +13,20 @@ import com.DigitalMoneyHouse.accountsservice.dto.AccountCreationRequest;
 import com.DigitalMoneyHouse.accountsservice.dto.AccountResponse;
 import com.DigitalMoneyHouse.accountsservice.entities.Account;
 import com.DigitalMoneyHouse.accountsservice.entities.Transaction;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 import java.util.stream.Collectors;
-
+@Slf4j
 @Service
 public class AccountsServiceImpl implements IAccountService {
+    private final Logger LOGGER = LoggerFactory.getLogger(AccountsServiceImpl.class);
     private final ModelMapper modelMapper;
     @Autowired
     private AccountsRepository accountsRepository;
@@ -79,7 +84,7 @@ public class AccountsServiceImpl implements IAccountService {
         return accountOutDTO; // Retornar el DTO
     }
 
-    public  Account findByEmail(String email) {
+    public  Account findByEmail(String email, String token) {
         return accountsRepository.findByEmail(email);
     }
 
@@ -91,6 +96,11 @@ public class AccountsServiceImpl implements IAccountService {
     }
 
     public AccountResponse createAccount(AccountCreationRequest request) {
+        log.info("Iniciando creación de cuenta para User ID: {}", request.getUserId());
+        log.debug("Datos de la solicitud: Email: {}, Alias: {}, CVU: {}, Saldo Inicial: {}",
+                request.getEmail(), request.getAlias(), request.getCvu(), request.getInitialBalance());
+
+        // Crear la entidad Account y mapear los datos
         Account account = new Account();
         account.setUserId(request.getUserId());
         account.setEmail(request.getEmail());
@@ -98,13 +108,21 @@ public class AccountsServiceImpl implements IAccountService {
         account.setCvu(request.getCvu());
         account.setBalance(request.getInitialBalance());
 
-        // Guarda la cuenta en la base de datos
-        account = accountsRepository.save(account);
+        // Guardar la cuenta en la base de datos
+        try {
+            account = accountsRepository.save(account);
+            log.info("Cuenta guardada exitosamente en la base de datos con ID: {},{},{},{}", account.getId(), account.getEmail(),account.getAlias(),account.getBalance());
+        } catch (Exception e) {
+            log.error("Error al guardar la cuenta en la base de datos: {}", e.getMessage(), e);
+            throw new AccountPersistenceException("Error al registrar la cuenta");
+        }
 
+        // Crear y devolver la respuesta
         AccountResponse response = new AccountResponse();
         response.setId(account.getId());
         response.setBalance(account.getBalance());
 
+        log.info("Cuenta creada con éxito. ID: {}, Balance: {}", response.getId(), response.getBalance());
         return response;
     }
     private void configureMapping() {
