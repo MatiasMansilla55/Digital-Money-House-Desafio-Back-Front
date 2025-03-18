@@ -18,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import static org.mockito.ArgumentMatchers.eq;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -94,47 +96,59 @@ public class TransferenceServiceTest {
     public void deberiaDeHacerUnaTransferenciaMedianteTarjeta() throws Exception {
         String jwtToken = "mockJwtToken";
         Long accountId = 1L;
-        Long cardId=1L;
+        Long cardId = 1L;
+
+        // Asignar un monto a la transferencia para evitar NullPointerException
+        transferenceOutDto.setAmount(new BigDecimal("500.00"));
+
         // Arrange
-        when(accountFeignClient.getAccountById(1L,jwtToken)).thenReturn((account));
-        when(cardFeignClient.getCardtById(1L,cardId,jwtToken)).thenReturn(Optional.of(card));
+        when(accountFeignClient.getAccountById(accountId, "Bearer " + jwtToken)).thenReturn(account);
+        when(cardFeignClient.getCardtById(accountId, cardId, "Bearer " + jwtToken)).thenReturn(Optional.of(card));
 
         // Act
-        transferenceServiceImpl.registerTransferenceFromCards(1L, transferenceOutDto,jwtToken);
+        transferenceServiceImpl.registerTransferenceFromCards(accountId, transferenceOutDto, "Bearer " + jwtToken);
 
         // Assert
         verify(transferenceRepository, times(1)).save(any(Transference.class));
-        verify(accountFeignClient, times(1)).saveAccount(any(Account.class),accountId,jwtToken);
-        verify(activityFeignClient, times(1)).save(any(Activity.class),accountId,jwtToken);
-        Assertions.assertEquals(new BigDecimal("1500.00"), account.getBalance()); // Verifica el balance actualizado
+        verify(accountFeignClient, times(1)).saveAccount(any(Account.class), eq(accountId), eq("Bearer " + jwtToken));
+        verify(activityFeignClient, times(1)).save(any(Activity.class), eq(accountId), eq("Bearer " + jwtToken));
+
+        // Verificar el nuevo balance de la cuenta después de la transferencia
+        Assertions.assertEquals(new BigDecimal("1500.00"), account.getBalance());
     }
+
     @Test
     public void deberiaDeHacerUnaTransferenciaMedianteDineroEnEfectivo() throws Exception {
         String jwtToken = "mockJwtToken";
         Long accountId = 1L;
+
         // Arrange: Simulamos la cuenta del remitente
-        when(accountFeignClient.getAccountById(1L,jwtToken)).thenReturn((senderAccount));
-        when(accountFeignClient.getAccountById(2L,jwtToken)).thenReturn((recipientAccount));
+        when(accountFeignClient.getAccountById(eq(1L), eq(jwtToken))).thenReturn(senderAccount);
+        when(accountFeignClient.getAccountById(eq(2L), eq(jwtToken))).thenReturn(recipientAccount);
 
         // Simulamos la búsqueda de la cuenta del destinatario
-        when(accountFeignClient.findByAlias(transferRequest.getRecipient(),jwtToken)).thenReturn(null); // No encontrado por alias
-        when(accountFeignClient.findByCvu(transferRequest.getRecipient(),jwtToken)).thenReturn(recipientAccount); // Encontrado por CVU
+        when(accountFeignClient.findByAlias(eq(transferRequest.getRecipient()), eq(jwtToken))).thenReturn(null); // No encontrado por alias
+        when(accountFeignClient.findByCvu(eq(transferRequest.getRecipient()), eq(jwtToken))).thenReturn(recipientAccount); // Encontrado por CVU
 
         // Simulamos el comportamiento del repositorio y la creación de los objetos
-        when(accountFeignClient.saveAccount(any(Account.class),accountId,jwtToken)).thenReturn(senderAccount, recipientAccount);
+        when(accountFeignClient.saveAccount(any(Account.class), eq(accountId), eq(jwtToken)))
+                .thenReturn(senderAccount)
+                .thenReturn(recipientAccount);
+
         when(transferenceRepository.save(any(Transference.class))).thenReturn(new Transference());
-        when(activityFeignClient.save(any(Activity.class),accountId,jwtToken)).thenReturn(new Activity());
+        when(activityFeignClient.save(any(Activity.class), eq(accountId), eq(jwtToken))).thenReturn(new Activity());
 
         // Act: Ejecutamos la transferencia
-        transferenceServiceImpl.makeTransferFromCash(1L, transferRequest,jwtToken);
+        transferenceServiceImpl.makeTransferFromCash(1L, transferRequest, jwtToken);
 
         // Assert: Verificamos que las cuentas fueron actualizadas correctamente
-        verify(accountFeignClient, times(2)).saveAccount(any(Account.class),accountId,jwtToken); // Ambas cuentas deben ser guardadas
+        verify(accountFeignClient, times(2)).saveAccount(any(Account.class), eq(accountId), eq(jwtToken)); // Ambas cuentas deben ser guardadas
         verify(transferenceRepository, times(1)).save(any(Transference.class)); // La transferencia debe guardarse
-        verify(activityFeignClient, times(2)).save(any(Activity.class),accountId,jwtToken); // Ambas actividades deben registrarse
+        verify(activityFeignClient, times(2)).save(any(Activity.class), eq(accountId), eq(jwtToken)); // Ambas actividades deben registrarse
         Assertions.assertEquals(new BigDecimal("800.00"), senderAccount.getBalance()); // Verifica el balance actualizado del remitente
         Assertions.assertEquals(new BigDecimal("700.00"), recipientAccount.getBalance()); // Verifica el balance actualizado del destinatario
     }
+
     @Test
     public void DeberiaDeObtenerLasUltimasTransferencias() {
         String jwtToken = "mockJwtToken";

@@ -1,8 +1,6 @@
 package com.example.api_cards.dto.entry;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Builder
 @AllArgsConstructor
@@ -53,4 +51,5 @@ public class CreateCardEntryDTO {
     public void setCvc(String cvc) {
         this.cvc = cvc;
     }
+
 }

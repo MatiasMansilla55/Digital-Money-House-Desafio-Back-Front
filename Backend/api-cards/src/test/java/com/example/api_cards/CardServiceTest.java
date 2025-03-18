@@ -49,7 +49,10 @@ class CardServiceTest {
 
     private CreateCardEntryDTO createCardEntryDTO;
     private Account mockAccount;
-    private Card mockCard;
+
+    @Mock
+    private Card mockCard; // Mantiene el mock sin reasignarlo manualmente
+
     private CardOutDTO mockCardOutDTO;
 
     // Atributos para testGetCardById_Success
@@ -72,14 +75,6 @@ class CardServiceTest {
         mockAccount = new Account();
         mockAccount.setUserId(1L);
         mockAccount.setEmail("test@example.com");
-
-        mockCard = new Card();
-        mockCard.setId(1L);
-        mockCard.setAccountId(1L);
-        mockCard.setNumber("1234567890123456");
-        mockCard.setName("Visa");
-        mockCard.setExpiry("12/25");
-        mockCard.setCvc("123");
 
         mockCardOutDTO = CardOutDTO.builder()
                 .id(1L)
@@ -111,11 +106,11 @@ class CardServiceTest {
     @Test
     void testCreateCard_Success() throws Exception {
         // Configurar mocks
-        String jwtToken = "mockJwtToken";
+        String jwtToken = "Bearer mockJwtToken";
         String email = "test@example.com";
 
         when(jwtAuthenticationFilter.extractEmailFromToken(jwtToken)).thenReturn(email);
-        when(accountFeignClient.findByEmail(email,jwtToken)).thenReturn(mockAccount);
+        when(accountFeignClient.findByEmail(email,"Bearer "+jwtToken)).thenReturn(mockAccount);
         when(cardRepository.findByNumber(createCardEntryDTO.getNumber())).thenReturn(Optional.empty());
         when(cardRepository.save(any(Card.class))).thenReturn(mockCard);
         when(modelMapper.map(mockCard, CardOutDTO.class)).thenReturn(mockCardOutDTO);
@@ -131,7 +126,7 @@ class CardServiceTest {
 
         // Verificar interacciones con los mocks
         verify(jwtAuthenticationFilter, times(1)).extractEmailFromToken(jwtToken);
-        verify(accountFeignClient, times(1)).findByEmail(email,jwtToken);
+        verify(accountFeignClient, times(1)).findByEmail(email,"Bearer "+ jwtToken);
         verify(cardRepository, times(1)).findByNumber(createCardEntryDTO.getNumber());
         verify(cardRepository, times(1)).save(any(Card.class));
         verify(modelMapper, times(1)).map(mockCard, CardOutDTO.class);
@@ -160,23 +155,31 @@ class CardServiceTest {
         // Configurar mocks
         String jwtToken = "mockJwtToken";
         String email = "test@example.com";
-        when(jwtAuthenticationFilter.extractEmailFromToken(jwtToken)).thenReturn(email);
-        when(accountFeignClient.findByEmail(email,jwtToken)).thenReturn(mockAccount);
+
+        when(jwtAuthenticationFilter.extractEmailFromToken("Bearer " + jwtToken)).thenReturn(email);
+        when(accountFeignClient.findByEmail(eq(email), anyString())).thenReturn(mockAccount);
         when(cardRepository.findByNumber(createCardEntryDTO.getNumber())).thenReturn(Optional.of(mockCard));
 
-        // Ejecutar y verificar excepción
+        // Mockear el comportamiento de `getAccountId()` sin que cause error
+        when(mockCard.getAccountId()).thenReturn(2L);
+
+        // Ejecutar y verificar la excepción
         CardAlreadyExistsException exception = assertThrows(CardAlreadyExistsException.class, () -> {
-            cardServiceImpl.createCard(1L, createCardEntryDTO, jwtToken);
+            cardServiceImpl.createCard(1L, createCardEntryDTO, "Bearer " + jwtToken);
         });
 
         Assertions.assertEquals("La tarjeta ya está asociada a otra cuenta.", exception.getMessage());
 
         // Verificar interacciones
-        verify(jwtAuthenticationFilter, times(1)).extractEmailFromToken(jwtToken);
-        verify(accountFeignClient, times(1)).findByEmail(email,jwtToken);
+        verify(jwtAuthenticationFilter, times(1)).extractEmailFromToken("Bearer " + jwtToken);
+        verify(accountFeignClient, times(1)).findByEmail(eq(email), anyString());
         verify(cardRepository, times(1)).findByNumber(createCardEntryDTO.getNumber());
         verifyNoMoreInteractions(cardRepository);
     }
+
+
+
+
 
     @Test
     void testGetCardById_Success() throws ResourceNotFoundException {
@@ -282,4 +285,6 @@ class CardServiceTest {
 
 
 }
+
+
 

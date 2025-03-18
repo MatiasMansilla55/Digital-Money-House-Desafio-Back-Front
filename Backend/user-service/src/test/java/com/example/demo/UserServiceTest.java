@@ -63,7 +63,7 @@ public class UserServiceTest {
         // Datos de entrada
         UserEntryDto userEntryDto = new UserEntryDto(
                 "Sebastian", "Sanchez", "33240969", "1135075158",
-                "palacios2@gmail.com", "RiverPlate2024", new HashSet<>()
+                "palacios2@gmail.com", "RiverPlate2024"
         );
 
         // Mock del comportamiento de PasswordEncoder

@@ -1,9 +1,6 @@
 package com.example.api_activity.dto.entry;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -59,3 +56,4 @@ public class ActivityFilterEntryDTO {
         this.activityType = activityType;
     }
 }
+
