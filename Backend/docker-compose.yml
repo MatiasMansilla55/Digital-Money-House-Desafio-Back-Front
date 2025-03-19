@@ -12,6 +12,11 @@ services:
       - 3307:3306
     volumes:
       - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
 
   eureka-server:
     build: eureka-server/
@@ -41,16 +46,75 @@ services:
     image: matias7132/user-service:latest
     ports:
       - 8087:8087
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/userregistry?createDatabaseIfNotExist=true
+      DB_USERNAME: root
+      DB_PASSWORD: Iancurti$87
     depends_on:
-      - eureka-server
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
 
   accounts-service:
     build: accounts-service/
     image: matias7132/accounts-service:latest
     ports:
       - 8084:8084
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/userregistry?createDatabaseIfNotExist=true
+      DB_USERNAME: root
+      DB_PASSWORD: Iancurti$87
     depends_on:
-      - eureka-server
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+
+  api-activity:
+    build: api-activity/
+    image: matias7132/api-activity:latest
+    ports:
+      - 9091:9091
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/userregistry?createDatabaseIfNotExist=true
+      DB_USERNAME: root
+      DB_PASSWORD: Iancurti$87
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+
+  api-transfers:
+    build: api-transfers/
+    image: matias7132/api-transfers:latest
+    ports:
+      - 9092:9092
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/userregistry?createDatabaseIfNotExist=true
+      DB_USERNAME: root
+      DB_PASSWORD: Iancurti$87
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+
+  api-cards:
+    build: api-cards/
+    image: matias7132/api-cards:latest
+    ports:
+      - 8083:8083
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/userregistry?createDatabaseIfNotExist=true
+      DB_USERNAME: root
+      DB_PASSWORD: Iancurti$87
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
 
 volumes:
   mysql-data:
